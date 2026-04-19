@@ -55,6 +55,9 @@ public class PiCollector implements AgentCollector {
         var seenFiles = new HashSet<Path>();
 
         // Step 2: For each running pi, find its session file
+        // Deduplicate: multiple PIDs may share the same cwd → same JSONL file.
+        // Keep the PID with the highest CPU (most likely the active one).
+        var fileTobestPid = new HashMap<Path, Integer>();
         for (var entry : pidToCwd.entrySet()) {
             int pid = entry.getKey();
             String cwd = entry.getValue();
@@ -62,13 +65,26 @@ public class PiCollector implements AgentCollector {
             Path dir = sessionsDir.resolve(encoded);
             if (!Files.isDirectory(dir)) continue;
 
-            // Find the most recent JSONL in this directory
             Path latestFile = findLatestJsonl(dir);
-            if (latestFile != null) {
-                seenFiles.add(latestFile);
-                var session = loadSession(pid, latestFile, shared);
-                if (session != null) sessions.add(session);
+            if (latestFile == null) continue;
+
+            Integer existing = fileTobestPid.get(latestFile);
+            if (existing == null) {
+                fileTobestPid.put(latestFile, pid);
+            } else {
+                // Pick the PID with higher CPU usage
+                var curInfo = shared.processInfo().get(existing);
+                var newInfo = shared.processInfo().get(pid);
+                double curCpu = curInfo != null ? curInfo.cpuPct() : 0;
+                double newCpu = newInfo != null ? newInfo.cpuPct() : 0;
+                if (newCpu > curCpu) fileTobestPid.put(latestFile, pid);
             }
+        }
+
+        for (var entry : fileTobestPid.entrySet()) {
+            seenFiles.add(entry.getKey());
+            var session = loadSession(entry.getValue(), entry.getKey(), shared);
+            if (session != null) sessions.add(session);
         }
 
         // Step 3: Recently finished sessions — scan all dirs for JSONL < 5 min old
