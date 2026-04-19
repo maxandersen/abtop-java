@@ -54,37 +54,39 @@ public class PiCollector implements AgentCollector {
         var sessions = new ArrayList<AgentSession>();
         var seenFiles = new HashSet<Path>();
 
-        // Step 2: For each running pi, find its session file
-        // Deduplicate: multiple PIDs may share the same cwd → same JSONL file.
-        // Keep the PID with the highest CPU (most likely the active one).
-        var fileTobestPid = new HashMap<Path, Integer>();
+        // Step 2: Collect all cwd directories that have running pi PIDs.
+        // Then find active JSONL files in each directory.
+        // Strategy: one session per active JSONL file (not per PID).
+        // A file is "active" if its mtime is recent (< 5 min) — meaning a pi process
+        // is writing to it. We attach any running PID from the same cwd for status.
+        var cwdToPids = new HashMap<String, List<Integer>>();
         for (var entry : pidToCwd.entrySet()) {
-            int pid = entry.getKey();
-            String cwd = entry.getValue();
+            cwdToPids.computeIfAbsent(entry.getValue(), k -> new ArrayList<>()).add(entry.getKey());
+        }
+
+        for (var cwdEntry : cwdToPids.entrySet()) {
+            String cwd = cwdEntry.getKey();
+            var pids = cwdEntry.getValue();
             String encoded = encodeCwd(cwd);
             Path dir = sessionsDir.resolve(encoded);
             if (!Files.isDirectory(dir)) continue;
 
-            Path latestFile = findLatestJsonl(dir);
-            if (latestFile == null) continue;
-
-            Integer existing = fileTobestPid.get(latestFile);
-            if (existing == null) {
-                fileTobestPid.put(latestFile, pid);
-            } else {
-                // Pick the PID with higher CPU usage
-                var curInfo = shared.processInfo().get(existing);
-                var newInfo = shared.processInfo().get(pid);
-                double curCpu = curInfo != null ? curInfo.cpuPct() : 0;
-                double newCpu = newInfo != null ? newInfo.cpuPct() : 0;
-                if (newCpu > curCpu) fileTobestPid.put(latestFile, pid);
+            // Find all recently active JSONL files (mtime < 5 min)
+            var activeFiles = listActiveJsonlFiles(dir, 300);
+            if (activeFiles.isEmpty()) {
+                // No active files — PIDs are idle shells, skip
+                continue;
             }
-        }
 
-        for (var entry : fileTobestPid.entrySet()) {
-            seenFiles.add(entry.getKey());
-            var session = loadSession(entry.getValue(), entry.getKey(), shared);
-            if (session != null) sessions.add(session);
+            // Assign one PID per active file (round-robin, newest PID to newest file)
+            pids.sort(Comparator.reverseOrder());
+            for (int i = 0; i < activeFiles.size(); i++) {
+                Path file = activeFiles.get(i);
+                int pid = i < pids.size() ? pids.get(i) : 0;
+                seenFiles.add(file);
+                var session = loadSession(pid, file, shared);
+                if (session != null) sessions.add(session);
+            }
         }
 
         // Step 3: Recently finished sessions — scan all dirs for JSONL < 5 min old
@@ -408,6 +410,31 @@ public class PiCollector implements AgentCollector {
     static String encodeCwd(String cwd) {
         // Pi uses double-dash delimited: --segments--
         return "--" + cwd.replace("/", "-").replaceFirst("^-", "") + "--";
+    }
+
+    /**
+     * List JSONL files in dir with mtime within maxAgeSecs, sorted newest first.
+     */
+    private List<Path> listActiveJsonlFiles(Path dir, long maxAgeSecs) {
+        try (var files = Files.list(dir)) {
+            var now = Instant.now();
+            return files.filter(p -> p.toString().endsWith(".jsonl"))
+                    .filter(p -> !Files.isSymbolicLink(p))
+                    .filter(p -> {
+                        try {
+                            var age = Duration.between(
+                                    Files.getLastModifiedTime(p).toInstant(), now);
+                            return age.toSeconds() <= maxAgeSecs;
+                        } catch (IOException e) { return false; }
+                    })
+                    .sorted(Comparator.<Path, Instant>comparing(p -> {
+                        try { return Files.getLastModifiedTime(p).toInstant(); }
+                        catch (IOException e) { return Instant.EPOCH; }
+                    }).reversed())
+                    .toList();
+        } catch (IOException e) {
+            return List.of();
+        }
     }
 
     private Path findLatestJsonl(Path dir) {
