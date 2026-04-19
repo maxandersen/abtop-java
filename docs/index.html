@@ -362,18 +362,18 @@
         <p class="note">Single binary, no JVM needed. ~50MB.</p>
       </div>
 
-      <!-- Uber JAR -->
+      <!-- JBang -->
       <div class="install-card">
-        <h3>Uber JAR <span style="font-size: 0.75rem; text-transform: none; letter-spacing: 0">(Java 21+)</span></h3>
-        <div class="code-block" data-copy="curl -Lo abtop.jar https://github.com/maxandersen/jabtop/releases/download/early-access/jabtop-0.0.0-SNAPSHOT.jar" style="margin-top: 0.75rem">
-          <pre><span class="prompt">$ </span>curl -Lo abtop.jar https://github.com/maxandersen/jabtop/releases/download/early-access/jabtop-0.0.0-SNAPSHOT.jar</pre>
+        <h3>☕ via JBang <span style="font-size: 0.75rem; text-transform: none; letter-spacing: 0">(any OS with Java 21+)</span></h3>
+        <div class="code-block" data-copy="curl -Ls https://sh.jbang.dev | bash -s - app setup" style="margin-top: 0.75rem">
+          <pre><span class="prompt">$ </span>curl -Ls https://sh.jbang.dev | bash -s - app setup   <span class="comment"># install JBang if needed</span></pre>
+      <div class="toast">Copied!</div>
+        </div>
+        <div class="code-block" data-copy="jbang app install abtop@maxandersen/jabtop" style="margin-top: 0.5rem">
+          <pre><span class="prompt">$ </span>jbang app install abtop@maxandersen/jabtop</pre>
           <div class="toast">Copied!</div>
         </div>
-        <div class="code-block" data-copy="java -jar abtop.jar" style="margin-top: 0.5rem">
-          <pre><span class="prompt">$ </span>java -jar abtop.jar</pre>
-          <div class="toast">Copied!</div>
-        </div>
-        <p class="note">~23MB JAR. Runs anywhere with Java 21.</p>
+        <p class="note">Installs <code style="color:var(--green)">abtop</code> command. JBang handles Java automatically.</p>
       </div>
 
     </div>

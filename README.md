@@ -22,11 +22,12 @@ curl -Lo abtop https://github.com/maxandersen/jabtop/releases/download/early-acc
 chmod +x abtop
 ```
 
-### Uber JAR (Java 21+)
+### Via JBang (any OS with Java 21+)
 
 ```bash
-curl -Lo abtop.jar https://github.com/maxandersen/jabtop/releases/download/early-access/jabtop-0.0.0-SNAPSHOT.jar
-java -jar abtop.jar
+curl -Ls https://sh.jbang.dev | bash -s - app setup   # install JBang if needed
+jbang app install abtop@maxandersen/jabtop
+abtop
 ```
 
 ## Usage

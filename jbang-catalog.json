@@ -1,0 +1,15 @@
+{
+  "aliases": {
+    "abtop": {
+      "script-ref": "https://github.com/maxandersen/jabtop/releases/download/early-access/jabtop-0.0.0-SNAPSHOT.jar",
+      "description": "AI agent monitor for your terminal — like htop, but for AI coding agents",
+      "java": "21"
+    },
+    "jabtop": {
+      "script-ref": "https://github.com/maxandersen/jabtop/releases/download/early-access/jabtop-0.0.0-SNAPSHOT.jar",
+      "description": "AI agent monitor for your terminal — like htop, but for AI coding agents",
+      "java": "21"
+    }
+  },
+  "description": "jabtop - AI agent monitor for your terminal"
+}
