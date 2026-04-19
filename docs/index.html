@@ -106,36 +106,16 @@
   }
   .btn-secondary:hover { border-color: var(--muted); }
 
-  /* Layout diagram as hero visual */
-  .layout-hero {
+  /* Hero screenshot */
+  .demo {
     text-align: center;
     margin-bottom: 4rem;
   }
-  .layout-box {
-    display: inline-block;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem 2rem;
-    text-align: left;
-    overflow-x: auto;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  .demo img {
     max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
   }
-  .layout-box pre {
-    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-    font-size: 0.78rem;
-    line-height: 1.45;
-    color: var(--muted);
-  }
-  .layout-box pre .hl-claude { color: var(--accent); }
-  .layout-box pre .hl-codex { color: var(--accent2); }
-  .layout-box pre .hl-pi { color: var(--green); }
-  .layout-box pre .hl-oc { color: var(--orange); }
-  .layout-box pre .hl-work { color: #3fb950; }
-  .layout-box pre .hl-wait { color: #d29922; }
-  .layout-box pre .hl-val { color: var(--text); }
-  .layout-box pre .hl-border { color: #30363d; }
 
   /* Install */
   .install-section {
@@ -287,34 +267,9 @@
     </div>
   </section>
 
-  <!-- Layout as hero visual -->
-  <section class="layout-hero">
-    <div class="layout-box">
-<pre><span class="hl-border">┌─ context ────────────────────────────────────────────────────────────┐
-│</span>  ▁▃▅▇█▇▅▃▁▃▅▇██                       S1 abtop       <span class="hl-work">████████</span> <span class="hl-val">82%</span>  <span class="hl-border">│
-│</span>  token rate (200pt history)            S2 prediction  <span class="hl-wait">█████████</span><span class="hl-val">91%</span>⚠ <span class="hl-border">│
-└──────────────────────────────────────────────────────────────────────┘
-┌─ quota ──────┐┌─ tokens ────┐┌─ projects ───┐┌─ ports ────────────┐
-│</span> CLAUDE       <span class="hl-border">││</span> Total  <span class="hl-val">1.2M</span> <span class="hl-border">││</span> abtop        <span class="hl-border">││</span> PORT  SESSION  CMD <span class="hl-border">│
-│</span> 5h <span class="hl-work">████</span> 35%  <span class="hl-border">││</span> Input  <span class="hl-val">402k</span> <span class="hl-border">││</span>  main +3 ~18 <span class="hl-border">││</span> :3000 api-srv node<span class="hl-border">│
-│</span>   resets 2h  <span class="hl-border">││</span> Output  <span class="hl-val">89k</span> <span class="hl-border">││</span>              <span class="hl-border">││</span> :8080 predict crgo<span class="hl-border">│
-│</span> 7d <span class="hl-work">██</span> 12%    <span class="hl-border">││</span> Cache  <span class="hl-val">710k</span> <span class="hl-border">││</span> prediction   <span class="hl-border">││</span>                    <span class="hl-border">│
-│</span>              <span class="hl-border">││</span> Turns: <span class="hl-val">48</span>   <span class="hl-border">││</span>  feat/x +1~2 <span class="hl-border">││</span> ORPHAN PORTS       <span class="hl-border">│
-│</span> CODEX        <span class="hl-border">││</span> Avg: <span class="hl-val">25k/t</span>  <span class="hl-border">││</span>              <span class="hl-border">││</span> :4000 old-prj node<span class="hl-border">│
-│</span> 5h <span class="hl-work">█</span> 9%     <span class="hl-border">││</span>             <span class="hl-border">││</span>              <span class="hl-border">││</span>                    <span class="hl-border">│
-└──────────────┘└─────────────┘└──────────────┘└────────────────────┘
-┌─ sessions ───────────────────────────────────────────────────────────┐
-│</span> ►<span class="hl-claude">*CC</span> 7336 abtop  <span class="hl-work">● Work</span> opus  <span class="hl-val">82% 1.2M  48</span>  Edit src/pay.rs       <span class="hl-border">│
-│</span>  <span class="hl-codex">>CD</span> 8840 pred   <span class="hl-wait">◌ Wait</span> sonn  <span class="hl-val">91% 340k  12</span>  waiting                <span class="hl-border">│
-│</span>  <span class="hl-pi">»PI</span> 9012 api    <span class="hl-work">● Work</span> sonn  <span class="hl-val">45% 180k   8</span>  bash cargo build      <span class="hl-border">│
-│</span>  <span class="hl-oc">■OC</span> 4521 jbang  <span class="hl-wait">◌ Wait</span> pick  <span class="hl-val">22%  15k   2</span>  waiting for input     <span class="hl-border">│
-│ ─────────────────────────────────────────────────────────────────── │
-│</span>  SESSION 7336 · /Users/you/abtop                                    <span class="hl-border">│
-│</span>  task  Stripe payment integration                                   <span class="hl-border">│
-│</span>  CHILDREN: 7401 cargo build  128M                                   <span class="hl-border">│
-│</span>  SUBAGENTS: explore-data ✓12k · run-tests ●8k                      <span class="hl-border">│
-└──────────────────────────────────────────────────────────────────────┘</span></pre>
-    </div>
+  <!-- Screenshot -->
+  <section class="demo">
+    <img src="assets/screenshot.svg" alt="abtop TUI showing Claude Code, Codex, pi.dev, and opencode sessions" loading="lazy">
   </section>
 
   <!-- Install -->
