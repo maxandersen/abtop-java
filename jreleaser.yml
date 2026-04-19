@@ -1,0 +1,49 @@
+project:
+  name: abtop
+  description: AI agent monitor for your terminal — like btop, but for AI coding agents
+  longDescription: |
+    Monitor Claude Code, Codex CLI, pi.dev, and opencode sessions in a single TUI dashboard.
+    Shows token usage, context window, rate limits, child processes, and more.
+    Java port of the Rust abtop project.
+  authors:
+    - Max Rydahl Andersen
+  license: MIT
+  links:
+    homepage: https://github.com/maxandersen/abtop-java
+    documentation: https://github.com/maxandersen/abtop-java#readme
+  languages:
+    java:
+      groupId: dev.abtop
+      artifactId: abtop-java
+      mainClass: dev.abtop.AbtopCommand
+      version: 21
+  inceptionYear: "2026"
+  snapshot:
+    label: early-access
+    fullChangelog: true
+
+release:
+  github:
+    owner: maxandersen
+    name: abtop-java
+    overwrite: true
+    update:
+      enabled: true
+      sections:
+        - ASSETS
+    tagName: "v{{projectVersion}}"
+    releaseName: "v{{projectVersion}}"
+    changelog:
+      formatted: ALWAYS
+      preset: conventional-commits
+      contributors:
+        enabled: true
+      hide:
+        categories:
+          - merge
+
+distributions:
+  abtop:
+    type: SINGLE_JAR
+    artifacts:
+      - path: release/abtop-{{projectVersion}}.jar
