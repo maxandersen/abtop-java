@@ -39,7 +39,7 @@ public final class ScreenshotGenerator {
 
         java.nio.file.Files.createDirectories(output.getParent());
         export(buffer).svg()
-                .options(o -> o.title("abtop").chrome(true))
+                .options(o -> o.title("jabtop").chrome(true))
                 .toFile(output);
 
         System.out.println("Screenshot saved to " + output.toAbsolutePath());

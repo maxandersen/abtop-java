@@ -3,8 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>abtop — AI Agent Monitor for Your Terminal</title>
+<title>jabtop — AI Agent Monitor for Your Terminal</title>
 <meta name="description" content="Like htop, but for AI coding agents. Monitor Claude Code, Codex CLI, pi.dev, and opencode in one TUI dashboard.">
+<meta property="og:title" content="jabtop — AI Agent Monitor">
+<meta property="og:description" content="Like htop, but for AI coding agents. Monitor Claude Code, Codex CLI, pi.dev, and opencode.">
 <style>
   :root {
     --bg: #0d1117;
@@ -106,7 +108,7 @@
   }
   .btn-secondary:hover { border-color: var(--muted); }
 
-  /* Hero screenshot */
+  /* Screenshot */
   .demo {
     text-align: center;
     margin-bottom: 4rem;
@@ -138,22 +140,83 @@
     padding: 1.25rem;
   }
   .install-card h3 {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     margin-bottom: 0.75rem;
   }
-  .install-card pre {
+  .install-card .note {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+  .tab {
+    padding: 0.4rem 1rem;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: inherit;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Copyable code blocks */
+  .code-block {
     background: var(--bg);
-    border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 0.75rem 1rem;
     overflow-x: auto;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    border: 1px solid transparent;
+  }
+  .code-block:hover { border-color: var(--border); }
+  .code-block.copied {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+  .code-block pre {
+    padding: 0.75rem 1rem;
+    margin: 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
     font-size: 0.85rem;
     color: var(--green);
-    font-family: 'SF Mono', 'Fira Code', monospace;
+    white-space: pre-wrap;
+    word-break: break-all;
   }
+  .code-block .prompt { color: var(--muted); user-select: none; }
+  .code-block .comment { color: var(--muted); user-select: none; }
+  .code-block .toast {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 10, 10, 0.85);
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
+  .code-block.copied .toast { opacity: 1; }
 
   /* Features */
   .features {
@@ -240,8 +303,6 @@
   @media (max-width: 600px) {
     .hero h1 { font-size: 2.4rem; }
     .hero .tagline { font-size: 1.1rem; }
-    .layout-box pre { font-size: 0.6rem; }
-    .layout-box { padding: 1rem; }
   }
 </style>
 </head>
@@ -251,7 +312,7 @@
 
   <!-- Hero -->
   <section class="hero">
-    <h1>abtop</h1>
+    <h1>jabtop</h1>
     <p class="tagline">Like htop, but for your AI coding agents. See every session at a glance.</p>
 
     <div class="agents">
@@ -262,45 +323,59 @@
     </div>
 
     <div class="cta-group">
-      <a href="https://github.com/maxandersen/abtop-java/releases" class="btn btn-primary">Download</a>
-      <a href="https://github.com/maxandersen/abtop-java" class="btn btn-secondary">GitHub →</a>
+      <a href="https://github.com/maxandersen/jabtop/releases" class="btn btn-primary">Download</a>
+      <a href="https://github.com/maxandersen/jabtop" class="btn btn-secondary">GitHub →</a>
     </div>
   </section>
 
   <!-- Screenshot -->
   <section class="demo">
-    <img src="assets/screenshot.svg" alt="abtop TUI showing Claude Code, Codex, pi.dev, and opencode sessions" loading="lazy">
+    <img src="assets/screenshot.svg" alt="jabtop TUI showing Claude Code, Codex, pi.dev, and opencode sessions" loading="lazy">
   </section>
 
   <!-- Install -->
   <section class="install-section">
     <h2>Install</h2>
     <div class="install-grid">
+
+      <!-- Native binary with OS tabs -->
       <div class="install-card">
         <h3>Native Binary</h3>
-        <pre># Download from GitHub Releases
-# Linux (amd64) or macOS (aarch64)
-curl -LO https://github.com/maxandersen/\
-abtop-java/releases/latest/download/\
-abtop-linux-amd64
-chmod +x abtop-linux-amd64
-./abtop-linux-amd64</pre>
+        <div class="tabs" data-tab-group="os">
+          <button class="tab active" data-tab="macos">macOS</button>
+          <button class="tab" data-tab="linux">Linux</button>
+        </div>
+        <div class="tab-content active" data-tab-panel="macos">
+          <div class="code-block" data-copy="curl -Lo abtop https://github.com/maxandersen/jabtop/releases/download/early-access/abtop-macos-aarch64 && chmod +x abtop" style="margin-top: 0.75rem">
+            <pre><span class="prompt">$ </span>curl -Lo abtop https://github.com/maxandersen/jabtop/releases/download/early-access/abtop-macos-aarch64
+<span class="prompt">$ </span>chmod +x abtop</pre>
+            <div class="toast">Copied!</div>
+          </div>
+        </div>
+        <div class="tab-content" data-tab-panel="linux">
+          <div class="code-block" data-copy="curl -Lo abtop https://github.com/maxandersen/jabtop/releases/download/early-access/abtop-linux-amd64 && chmod +x abtop" style="margin-top: 0.75rem">
+            <pre><span class="prompt">$ </span>curl -Lo abtop https://github.com/maxandersen/jabtop/releases/download/early-access/abtop-linux-amd64
+<span class="prompt">$ </span>chmod +x abtop</pre>
+            <div class="toast">Copied!</div>
+          </div>
+        </div>
+        <p class="note">Single binary, no JVM needed. ~50MB.</p>
       </div>
+
+      <!-- Uber JAR -->
       <div class="install-card">
-        <h3>Uber JAR (Java 21+)</h3>
-        <pre>curl -LO https://github.com/maxandersen/\
-abtop-java/releases/latest/download/\
-abtop.jar
-java -jar abtop.jar</pre>
+        <h3>Uber JAR <span style="font-size: 0.75rem; text-transform: none; letter-spacing: 0">(Java 21+)</span></h3>
+        <div class="code-block" data-copy="curl -Lo abtop.jar https://github.com/maxandersen/jabtop/releases/download/early-access/jabtop-0.0.0-SNAPSHOT.jar" style="margin-top: 0.75rem">
+          <pre><span class="prompt">$ </span>curl -Lo abtop.jar https://github.com/maxandersen/jabtop/releases/download/early-access/jabtop-0.0.0-SNAPSHOT.jar</pre>
+          <div class="toast">Copied!</div>
+        </div>
+        <div class="code-block" data-copy="java -jar abtop.jar" style="margin-top: 0.5rem">
+          <pre><span class="prompt">$ </span>java -jar abtop.jar</pre>
+          <div class="toast">Copied!</div>
+        </div>
+        <p class="note">~23MB JAR. Runs anywhere with Java 21.</p>
       </div>
-      <div class="install-card">
-        <h3>Build from Source</h3>
-        <pre>git clone https://github.com/\
-maxandersen/abtop-java
-cd abtop-java
-./mvnw package -DskipTests
-java -jar target/abtop-java-*-runner.jar</pre>
-      </div>
+
     </div>
   </section>
 
@@ -336,7 +411,7 @@ java -jar target/abtop-java-*-runner.jar</pre>
       <div class="feature-card">
         <div class="icon">🚀</div>
         <h3>Jump to Pane</h3>
-        <p>Press <kbd>g</kbd> to jump directly to the agent's tmux or zellij pane. Cross-session support.</p>
+        <p>Press <kbd>g</kbd> to jump directly to the agent's tmux or zellij pane.</p>
       </div>
       <div class="feature-card">
         <div class="icon">📁</div>
@@ -372,13 +447,49 @@ java -jar target/abtop-java-*-runner.jar</pre>
 <footer>
   <div class="container">
     <p>
-      <a href="https://github.com/maxandersen/abtop-java">abtop-java</a> — Java port of
+      <a href="https://github.com/maxandersen/jabtop">jabtop</a> — Java port of
       <a href="https://github.com/graykode/abtop">abtop</a> (Rust).
       Built with <a href="https://quarkus.io">Quarkus</a> +
       <a href="https://tamboui.dev">TamboUI</a>.
     </p>
   </div>
 </footer>
+
+<script>
+// OS tabs
+document.querySelectorAll('.tabs').forEach(tabBar => {
+  tabBar.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const group = tabBar.closest('.install-card');
+      group.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      group.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      group.querySelector(`[data-tab-panel="${tab.dataset.tab}"]`).classList.add('active');
+    });
+  });
+});
+
+// Auto-detect OS
+(function() {
+  const ua = navigator.userAgent.toLowerCase();
+  let os = 'macos';
+  if (ua.includes('linux')) os = 'linux';
+  document.querySelectorAll('.install-card').forEach(card => {
+    const tab = card.querySelector(`.tab[data-tab="${os}"]`);
+    if (tab) tab.click();
+  });
+})();
+
+// Click-to-copy
+document.querySelectorAll('.code-block[data-copy]').forEach(block => {
+  block.addEventListener('click', () => {
+    navigator.clipboard.writeText(block.dataset.copy).then(() => {
+      block.classList.add('copied');
+      setTimeout(() => block.classList.remove('copied'), 1200);
+    });
+  });
+});
+</script>
 
 </body>
 </html>

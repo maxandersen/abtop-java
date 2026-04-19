@@ -67,7 +67,7 @@ jobs:
       - name: Prepare artifact
         run: |
           mkdir -p release
-          cp target/abtop-java-0.0.0-SNAPSHOT-runner.jar release/abtop-0.0.0-SNAPSHOT.jar
+          cp target/jabtop-0.0.0-SNAPSHOT-runner.jar release/jabtop-0.0.0-SNAPSHOT.jar
 
       - name: Run JReleaser
         uses: jreleaser/release-action@v2
@@ -123,7 +123,7 @@ jobs:
         run: ./mvnw --no-transfer-progress package -Dnative -DskipTests
 
       - name: Rename binary
-        run: mv target/abtop-java-0.0.0-SNAPSHOT-runner ${{ matrix.artifact }}
+        run: mv target/jabtop-0.0.0-SNAPSHOT-runner ${{ matrix.artifact }}
 
       - name: Upload to early-access release
         env:

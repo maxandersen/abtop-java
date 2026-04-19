@@ -1,5 +1,5 @@
 project:
-  name: abtop
+  name: jabtop
   description: AI agent monitor for your terminal — like btop, but for AI coding agents
   longDescription: |
     Monitor Claude Code, Codex CLI, pi.dev, and opencode sessions in a single TUI dashboard.
@@ -9,12 +9,12 @@ project:
     - Max Rydahl Andersen
   license: MIT
   links:
-    homepage: https://github.com/maxandersen/abtop-java
-    documentation: https://github.com/maxandersen/abtop-java#readme
+    homepage: https://github.com/maxandersen/jabtop
+    documentation: https://github.com/maxandersen/jabtop#readme
   languages:
     java:
       groupId: dev.abtop
-      artifactId: abtop-java
+      artifactId: jabtop
       mainClass: dev.abtop.AbtopCommand
       version: 21
   inceptionYear: "2026"
@@ -25,7 +25,7 @@ project:
 release:
   github:
     owner: maxandersen
-    name: abtop-java
+    name: jabtop
     overwrite: true
     update:
       enabled: true
@@ -43,7 +43,7 @@ release:
           - merge
 
 distributions:
-  abtop:
+  jabtop:
     type: SINGLE_JAR
     artifacts:
-      - path: release/abtop-{{projectVersion}}.jar
+      - path: release/jabtop-{{projectVersion}}.jar

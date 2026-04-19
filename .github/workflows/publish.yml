@@ -49,7 +49,7 @@ jobs:
       - name: Prepare release
         run: |
           mkdir -p release
-          cp target/abtop-java-${{ steps.version.outputs.version }}-runner.jar release/abtop-${{ steps.version.outputs.version }}.jar
+          cp target/jabtop-${{ steps.version.outputs.version }}-runner.jar release/jabtop-${{ steps.version.outputs.version }}.jar
 
       - name: Run JReleaser
         uses: jreleaser/release-action@v2
@@ -105,7 +105,7 @@ jobs:
         run: ./mvnw --no-transfer-progress package -Dnative -DskipTests
 
       - name: Rename binary
-        run: mv target/abtop-java-${{ needs.release-jar.outputs.version }}-runner ${{ matrix.artifact }}
+        run: mv target/jabtop-${{ needs.release-jar.outputs.version }}-runner ${{ matrix.artifact }}
 
       - name: Upload to release
         env:

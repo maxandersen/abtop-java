@@ -1,58 +1,73 @@
-# abtop-java
+# jabtop
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+**Like htop, but for your AI coding agents.**
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+See every Claude Code, Codex CLI, pi.dev, and opencode session at a glance — token usage, context window %, rate limits, child processes, open ports, and more.
 
-## Running the application in dev mode
+Java port of [abtop](https://github.com/graykode/abtop) (Rust). Built with [Quarkus](https://quarkus.io) + [TamboUI](https://tamboui.dev).
 
-You can run your application in dev mode that enables live coding using:
+## Install
 
-```shell script
-./mvnw quarkus:dev
+### Native Binary (no JVM needed)
+
+**macOS (Apple Silicon):**
+```bash
+curl -Lo abtop https://github.com/maxandersen/jabtop/releases/download/early-access/abtop-macos-aarch64
+chmod +x abtop
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
-
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
+**Linux (amd64):**
+```bash
+curl -Lo abtop https://github.com/maxandersen/jabtop/releases/download/early-access/abtop-linux-amd64
+chmod +x abtop
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+### Uber JAR (Java 21+)
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+```bash
+curl -Lo abtop.jar https://github.com/maxandersen/jabtop/releases/download/early-access/jabtop-0.0.0-SNAPSHOT.jar
+java -jar abtop.jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+## Usage
 
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
+```bash
+abtop              # Launch TUI
+abtop --once       # Print snapshot and exit
+abtop --setup      # Install StatusLine hook for Claude rate limits
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+## Supported Agents
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+| Agent | Badge | Data Source |
+|-------|-------|-------------|
+| Claude Code | `*CC` | `~/.claude/sessions/` + JSONL transcripts |
+| Codex CLI | `>CD` | `~/.codex/state_5.sqlite` or JSONL |
+| pi.dev | `»PI` | `~/.pi/agent/sessions/` JSONL |
+| opencode | `■OC` | `~/.local/share/opencode/opencode.db` |
+
+## Keybindings
+
+| Key | Action |
+|-----|--------|
+| `↑`/`↓` or `k`/`j` | Select session |
+| `g` | Jump to session pane (tmux / zellij) |
+| `x` | Kill selected session |
+| `X` | Kill all orphan ports |
+| `t` | Cycle theme |
+| `r` | Force refresh |
+| `q` | Quit |
+
+## Building
+
+```bash
+./mvnw package -DskipTests          # uber-jar
+java -jar target/jabtop-*-runner.jar
+
+./mvnw package -Dnative -DskipTests # native image (GraalVM 21)
+./target/jabtop-*-runner
 ```
 
-You can then execute your native executable with: `./target/abtop-java-1.0.0-SNAPSHOT-runner`
+## License
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- Picocli ([guide](https://quarkus.io/guides/picocli)): Develop command line applications with Picocli
+MIT
